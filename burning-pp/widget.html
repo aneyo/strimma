@@ -86,7 +86,7 @@
       function formatNumber(number, separator, fixed = 0, fallback = "0") {
         if (isNaN(+number)) return fallback;
 
-        const numberStr = number.toFixed(fixed);
+        const numberStr = (+number).toFixed(fixed);
         if (numberStr.length < 1) return fallback;
 
         const numberStrings = numberStr.split(".");
