@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link
+      href="https://unpkg.com/normalize.css@8.0.1/normalize.css"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="../resources/burning-digits.css" />
+    <style>
+      body {
+        display: flex;
+        width: 100vw;
+        height: 100vh;
+        overflow: hidden;
+
+        opacity: 0;
+        transition: opacity 250ms ease-in-out;
+
+        /* default: top-left */
+        align-items: start;
+        justify-content: start;
+      }
+
+      body[show] {
+        opacity: 1;
+      }
+
+      body[v="t"],
+      body[v="top"],
+      body[v="up"] {
+        align-items: start;
+      }
+
+      body[v="c"],
+      body[v="m"],
+      body[v="center"],
+      body[v="centre"],
+      body[v="middle"] {
+        align-items: center;
+      }
+
+      body[v="b"],
+      body[v="bottom"],
+      body[v="down"] {
+        align-items: end;
+      }
+
+      body[h="l"],
+      body[h="left"] {
+        justify-content: start;
+      }
+
+      body[h="c"],
+      body[h="m"],
+      body[h="center"],
+      body[h="centre"],
+      body[h="middle"] {
+        justify-content: center;
+      }
+
+      body[h="r"],
+      body[h="right"] {
+        justify-content: end;
+      }
+    </style>
+  </head>
+
+  <body>
+    <script>
+      function LERP(a, b, c) {
+        return a + (b - a) * Math.min(1, Math.max(0, c));
+      }
+    </script>
+
+    <script>
+      const DEFAULT_SEPARATOR = "";
+      const AVAILABLE_SEPARATORS = {
+        none: "",
+        dot: ".",
+        comma: ",",
+        space: " ",
+      };
+
+      function formatNumber(number, separator, fixed = 0, fallback = "0") {
+        if (isNaN(+number)) return fallback;
+
+        const numberStr = number.toFixed(fixed);
+        if (numberStr.length < 1) return fallback;
+
+        const numberStrings = numberStr.split(".");
+
+        let formattedNumber =
+          numberStrings.length > 1 ? `.${numberStrings[1]}` : "";
+        const numberLength = numberStrings[0].length;
+
+        for (let i = 0; i < numberLength; i++) {
+          if (i > 0 && i % 3 == 0)
+            formattedNumber = separator + formattedNumber;
+          formattedNumber =
+            numberStrings[0][numberLength - i - 1] + formattedNumber;
+        }
+
+        return formattedNumber;
+      }
+    </script>
+
+    <script>
+      const settings = {
+        test: null,
+
+        address: "ws://localhost:24050/ws",
+        position: {
+          v: "top",
+          h: "left",
+        },
+
+        speed: 5,
+
+        separator: DEFAULT_SEPARATOR,
+        hideSuffix: false,
+
+        savePPValue: false,
+        showOnResultsScreen: true,
+      };
+
+      function parseSettings(isHashSettings) {
+        const params = new URLSearchParams(
+          (isHashSettings
+            ? document.location.hash
+            : document.location.search
+          ).slice(1)
+        );
+
+        // gosumemory websocket address
+        settings.address =
+          params.get("addr") ??
+          params.get("address") ??
+          "ws://localhost:24050/ws";
+
+        // counter position
+        settings.position.h = params.get("h") ?? params.get("x") ?? "left";
+        settings.position.v = params.get("v") ?? params.get("y") ?? "top";
+
+        applyPosition();
+
+        // number interpolation "speed"
+        const speed = params.get("speed");
+        settings.speed = speed != null && !isNaN(speed) ? speed : 5;
+
+        // number formatting separator, defaults to "none"
+        settings.separator =
+          AVAILABLE_SEPARATORS[params.get("sep")] ?? DEFAULT_SEPARATOR;
+
+        // hide "pp" suffix
+        settings.hideSuffix = params.has("hidesuffix");
+
+        // save pp value on state change
+        settings.savePPValue = params.has("savepp");
+
+        // show counter on "results screen" state
+        settings.showOnResultsScreen = params.has("stayonresults");
+
+        // testing
+        const testingNumber = params.get("test");
+        settings.test =
+          testingNumber != null && !isNaN(testingNumber) ? testingNumber : null;
+      }
+
+      function applyPosition() {
+        document.body.setAttribute("v", settings.position.v);
+        document.body.setAttribute("h", settings.position.h);
+      }
+
+      (function () {
+        const hashLength = document.location.hash.length;
+        const searchLength = document.location.search.length;
+
+        const settingsFromHash = hashLength > 1 && searchLength <= hashLength;
+
+        if (settingsFromHash)
+          window.addEventListener(
+            "hashchange",
+            parseSettings.bind(this, settingsFromHash)
+          );
+
+        parseSettings(settingsFromHash);
+      })();
+    </script>
+
+    <script>
+      (function () {
+        const pool = [];
+
+        function populate(num) {
+          for (let i = 0; i < num; i++) {
+            const element = document.createElement("div");
+            element.classList.add("burning");
+            document.body.insertBefore(element, document.body.lastChild);
+            pool.push(element);
+          }
+
+          pool[pool.length - 1].className = "burning pp";
+        }
+
+        function map(str) {
+          return [...str]
+            .map(function (c) {
+              if (c == " ") return "space";
+              if (!isNaN(+c)) return `d${c}`;
+              switch (c) {
+                case ",":
+                  return "comma";
+                case ".":
+                  return "dot";
+              }
+              return null;
+            })
+            .filter((c) => c != null);
+        }
+
+        window.draw = function (num, hideSuffix = false) {
+          const number = formatNumber(num, settings.separator);
+
+          const mapped = map(number);
+          const length = mapped.length + 1;
+          const populated = length - pool.length;
+
+          if (populated > 0) populate(populated);
+          const offset = pool.length - length;
+
+          for (let i = 0; i < pool.length - 1; i++)
+            pool[i].className =
+              i < offset ? "burning none" : `burning ${mapped[i - offset]}`;
+
+          document.body.lastElementChild.className = hideSuffix
+            ? "burning"
+            : "burning pp";
+        };
+      })();
+    </script>
+
+    <script>
+      const counter = {
+        show: false,
+        start: 0,
+        current: 0,
+        target: 0,
+      };
+
+      window.setNumber = function (num, quick = false) {
+        if (counter.target == num) return;
+
+        if (quick) {
+          counter.current = num;
+          counter.target = num;
+          return;
+        }
+
+        counter.target = num;
+      };
+
+      const timing = {
+        lastFrame: 0,
+      };
+
+      function loop(timestamp) {
+        if (settings.test != null) {
+          counter.show = true;
+          setNumber(settings.test);
+        }
+
+        const frameTime = timestamp - timing.lastFrame;
+        timing.lastFrame = timestamp;
+        const framePercentage = 1000 / frameTime / 10_000;
+
+        if (settings.speed > 0)
+          counter.current = LERP(
+            counter.current,
+            counter.target,
+            settings.speed * framePercentage
+          );
+        else counter.current = counter.target;
+
+        document.body.toggleAttribute("show", counter.show);
+        draw(counter.current, settings.hideSuffix);
+        requestAnimationFrame(loop);
+      }
+
+      requestAnimationFrame(loop);
+    </script>
+
+    <script>
+      function dataMessage(data) {
+        if (settings.test != null) return;
+
+        switch (data.menu.state) {
+          case 2: // state 2 - game play
+            counter.show = true;
+            break;
+
+          case 7: // state 7 - result screen
+            counter.show = settings.showOnResultsScreen && counter.target > 0;
+            break;
+
+          default:
+            counter.show = false;
+            if (!settings.savePPValue) setNumber(0, true);
+            return;
+        }
+
+        setNumber(data.gameplay.pp.current);
+      }
+
+      function connectToWS() {
+        const addr = tryUsingURLAddress(settings.address);
+        const ws = new WebSocket(addr);
+
+        ws.onmessage = function (event) {
+          const data = JSON.parse(event.data);
+          if (data != null) dataMessage(data);
+        };
+
+        ws.onclose = function (event) {
+          setTimeout(connectToWS.bind(), 5_000);
+        };
+      }
+
+      function tryUsingURLAddress(addr, append) {
+        try {
+          const newURL = (append ? "ws://" : "") + addr;
+          if (new URL(newURL).protocol == "ws:") return newURL;
+          else return "ws://" + newURL;
+        } catch (error) {
+          if (append)
+            throw new Error(`URL "${addr}"" is not a valid url address.`);
+          return tryUsingURLAddress(addr, true);
+        }
+      }
+
+      connectToWS();
+    </script>
+  </body>
+</html>
