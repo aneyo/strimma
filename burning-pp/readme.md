@@ -1,6 +1,6 @@
 # ![](cool-logo.gif)
 
-_cool pp counter that works with [**gosumemory**](https://github.com/l3lackShark/gosumemory)!_
+_cool pp counter that works with [**gosumemory**](https://github.com/l3lackShark/gosumemory)!_  
 [`https://aneyo.github.io/strimma/burning-pp/widget.html`](https://aneyo.github.io/strimma/burning-pp/widget.html)
 
 ## Presets
