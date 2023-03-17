@@ -1,0 +1,287 @@
+@import "https://unpkg.com/open-props";
+@import "https://unpkg.com/open-props/gray-hsl.min.css";
+@import "https://unpkg.com/open-props/normalize.min.css";
+
+html {
+  --accent: #ff1b00;
+}
+
+@media (prefers-color-scheme: light) {
+  html {
+    --text-1: var(--gray-8);
+    --text-2: var(--gray-7);
+    --surface-1: var(--gray-0);
+    --surface-2: var(--gray-1);
+    --surface-3: var(--gray-2);
+    --surface-4: var(--gray-3);
+    --surface-shadow: var(--gray-8-hsl);
+    --shadow-strength: 2%;
+  }
+}
+
+@media (prefers-color-scheme: dark) {
+  html {
+    --text-1: var(--gray-3);
+    --text-2: var(--gray-5);
+    --surface-1: var(--gray-12);
+    --surface-2: var(--gray-11);
+    --surface-3: var(--gray-10);
+    --surface-4: var(--gray-9);
+    --surface-shadow: var(--gray-12-hsl);
+    --shadow-strength: 80%;
+  }
+}
+
+input:active,
+input:focus,
+select:active,
+select:focus {
+  outline-color: var(--accent);
+  outline-offset: 0;
+}
+
+a,
+a:visited {
+  color: var(--accent);
+}
+
+a:hover {
+  text-decoration-color: var(--accent);
+}
+
+* {
+  accent-color: var(--accent);
+}
+
+iframe {
+  color-scheme: normal;
+}
+
+html {
+  background-color: var(--surface-1);
+}
+
+body {
+  display: flex;
+  justify-content: center;
+}
+
+.content {
+  /* background-color: red; */
+
+  width: 100%;
+  max-width: 920px;
+}
+
+.header {
+  width: 100%;
+  max-width: 920px;
+
+  top: 1em;
+  position: sticky;
+  z-index: 40;
+}
+
+.header > .block {
+  position: relative;
+  padding-top: 250px;
+  margin: 0 1em;
+  overflow: hidden;
+
+  border-radius: var(--radius-2);
+  background-color: var(--surface-1);
+  border: 1px solid var(--surface-4);
+}
+
+#copy {
+  border-radius: 0;
+  width: 100%;
+  padding: 0 1em;
+  height: 2.8em;
+  background-color: var(--surface-1);
+  text-overflow: ellipsis;
+}
+
+#copy:focus {
+  outline: none;
+}
+
+#cover {
+  position: absolute;
+
+  top: 0;
+  width: 100%;
+  max-width: 900px;
+  height: 250px;
+
+  z-index: 40;
+  opacity: 0.6;
+
+  background-size: cover;
+  background-position: center;
+}
+
+#widget {
+  position: absolute;
+
+  top: 0;
+  left: 1em;
+  width: calc(100% - 2em);
+  max-width: 900px;
+  height: calc(250px - 0.5em);
+
+  z-index: 50;
+  user-select: none;
+}
+
+#settings {
+  /* margin-top: calc(250px + 2.8em + 1em + 2px); */
+  padding: 1em;
+  display: flex;
+  flex-direction: column;
+  gap: 1em;
+}
+
+.foot {
+  padding: 1em;
+  padding-bottom: 2em;
+  text-align: center;
+}
+
+.accent-text {
+  color: var(--accent);
+}
+
+.no-select {
+  user-select: none;
+}
+
+fieldset > legend {
+  user-select: none;
+}
+
+input.single {
+  width: 100%;
+}
+
+.split {
+  display: flex;
+  justify-content: stretch;
+  width: 100%;
+  gap: 1em;
+}
+
+.split > * {
+  width: inherit;
+}
+
+@media (max-width: 768px) {
+  .split {
+    flex-wrap: wrap;
+  }
+}
+
+.close-gap {
+  gap: 0.5em;
+}
+
+.animation-field {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+}
+
+#animation-cover {
+  position: absolute;
+
+  top: 0;
+  width: 100%;
+  height: 120px;
+
+  opacity: 0.3;
+
+  background-size: cover;
+  background-position: center;
+
+  border-radius: var(--radius-2);
+}
+
+#animation-widget {
+  width: 100%;
+  height: 120px;
+
+  z-index: 10;
+  user-select: none;
+  cursor: pointer;
+}
+
+#animation-button {
+  height: 2em;
+  color: white;
+  padding: 0 1em;
+  background-color: var(--accent);
+  border-radius: var(--radius-2);
+}
+
+.vertical-field {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25em;
+}
+
+.align-field {
+  display: flex;
+  gap: 1em;
+}
+
+.check,
+.radio {
+  display: flex;
+  gap: 0.5em;
+  align-items: center;
+}
+
+.check > label,
+.radio > label {
+  user-select: none;
+}
+
+#test-input:disabled {
+  opacity: 0.7;
+  cursor: no-drop;
+}
+
+.nav {
+  height: 3.25em;
+  margin: 0 1em;
+  margin-top: 0.5em;
+}
+
+.nav-link {
+  height: 100%;
+  width: fit-content;
+  display: block;
+  padding: 0 0.5em;
+  display: flex;
+  align-items: center;
+  line-height: 0;
+}
+
+.nav-link > span {
+  line-height: 1;
+  display: block;
+}
+
+.set:not(:empty):before {
+  content: " ‒ ";
+}
+
+body {
+  opacity: 0;
+  transition: opacity 250ms ease-in-out;
+}
+
+#cpyrt::after {
+  content: " ‒ ";
+}

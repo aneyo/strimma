@@ -1,11 +1,21 @@
 # ![](cool-logo.gif)
 
-_cool pp counter that works with [**gosumemory**](https://github.com/l3lackShark/gosumemory)!_  
+_cool pp counter that works with [**gosumemory**](https://github.com/l3lackShark/gosumemory)!_
+
+# How to use
+
+[`https://aneyo.github.io/strimma/burning-pp/configurator`](https://aneyo.github.io/strimma/burning-pp/configurator)
+
+- Open [**configurator**](https://aneyo.github.io/strimma/burning-pp/configurator)
+- Change things to your liking
+- Copy widget link
+- Paste this link into OBS or other streaming/recording software
+- _??????_
+- PROFIT!
+
+# Configuration by hands
+
 [`https://aneyo.github.io/strimma/burning-pp/widget.html`](https://aneyo.github.io/strimma/burning-pp/widget.html)
-
-## Presets
-
-**Centered counter**: [`https://aneyo.github.io/strimma/burning-pp/widget.html#x=c&y=c`](https://aneyo.github.io/strimma/burning-pp/widget.html#x=c&y=c)
 
 ## Settings
 

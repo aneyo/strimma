@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+<html lang="en" dark>
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" href="../fav.gif" type="image/gif" />
+    <title>burning pp configurator lol</title>
+    <link rel="stylesheet" href="./style.css" />
+    <script src="./292301.js"></script>
+    <script src="./help.js"></script>
+  </head>
+  <body>
+    <div class="content">
+      <div class="nav">
+        <a href="https://aneyo.github.io/strimma" class="nav-link">
+          <span>aneyo/strimma</span>
+        </a>
+      </div>
+
+      <div class="header">
+        <div class="block">
+          <div id="cover"></div>
+
+          <iframe id="widget"></iframe>
+
+          <input
+            readonly
+            id="copy"
+            type="text"
+            value="https://aneyo.github.io/strimma/burning-pp/widget.html"
+          />
+        </div>
+      </div>
+
+      <form id="settings">
+        <fieldset>
+          <legend>Number to preview</legend>
+          <div class="vertical-field">
+            <input
+              type="number"
+              id="test-input"
+              class="single"
+              name="test"
+              min="0"
+              value="1234"
+            />
+            <div class="check">
+              <input type="checkbox" name="connect" value="true" id="connect" />
+              <label for="connect">
+                <span>Use pp value from gosumemory</span>
+              </label>
+            </div>
+          </div>
+        </fieldset>
+
+        <fieldset>
+          <legend>
+            <span>Address to </span>
+            <a
+              href="https://github.com/l3lackShark/gosumemory"
+              target="_blank"
+              rel="noopener noreferrer"
+              >gosumemory</a
+            >
+            <span> WebSocket server</span>
+          </legend>
+
+          <input
+            type="text"
+            class="single"
+            name="addr"
+            placeholder="ws://localhost:24050/ws"
+          />
+        </fieldset>
+
+        <div class="split">
+          <fieldset>
+            <legend>Vertical align</legend>
+
+            <div class="align-field">
+              <div class="radio">
+                <input type="radio" id="top" name="v" value="t" checked />
+                <label for="top">
+                  <span>Top</span>
+                </label>
+              </div>
+
+              <div class="radio">
+                <input type="radio" id="v-center" name="v" value="c" />
+                <label for="v-center">
+                  <span>Center</span>
+                </label>
+              </div>
+
+              <div class="radio">
+                <input type="radio" id="bottom" name="v" value="b" />
+                <label for="bottom">
+                  <span>Bottom</span>
+                </label>
+              </div>
+            </div>
+          </fieldset>
+
+          <fieldset>
+            <legend>Horizontal align</legend>
+
+            <div class="align-field">
+              <div class="radio">
+                <input type="radio" id="left" name="h" value="l" checked />
+                <label for="left">
+                  <span>Left</span>
+                </label>
+              </div>
+
+              <div class="radio">
+                <input type="radio" id="h-center" name="h" value="c" />
+                <label for="h-center">
+                  <span>Center</span>
+                </label>
+              </div>
+
+              <div class="radio">
+                <input type="radio" id="right" name="h" value="r" />
+                <label for="right">
+                  <span>Right</span>
+                </label>
+              </div>
+            </div>
+          </fieldset>
+        </div>
+
+        <fieldset>
+          <legend>Number format</legend>
+          <div class="split close-gap">
+            <input id="format-test" class="single no-select" disabled />
+
+            <select name="sep">
+              <option value="none">None</option>
+              <option value="dot">Dot - 1.234</option>
+              <option value="comma">Comma - 1,234</option>
+              <option value="space">Space - 1 234</option>
+            </select>
+          </div>
+        </fieldset>
+
+        <fieldset>
+          <legend>Animation speed</legend>
+
+          <div class="animation-field close-gap">
+            <div id="animation-cover"></div>
+
+            <iframe id="animation-widget"></iframe>
+
+            <div style="display: flex; gap: 0.5em; align-items: center">
+              <input
+                type="number"
+                name="speed"
+                min="0"
+                step="0.01"
+                value="5"
+                style="flex: 1"
+              />
+              <button id="animation-button" type="button">
+                <span>Play</span>
+              </button>
+            </div>
+          </div>
+        </fieldset>
+
+        <fieldset>
+          <legend>Misc</legend>
+          <div class="vertical-field">
+            <div class="check">
+              <input
+                type="checkbox"
+                id="stay"
+                name="stayonresults"
+                value="true"
+              />
+              <label for="stay">
+                <span>Show counter when osu! shows the results screen</span>
+              </label>
+            </div>
+
+            <div class="check">
+              <input type="checkbox" id="save" name="savepp" value="true" />
+              <label for="save">
+                <span>
+                  Save pp value on game state changes (e.g. leaving the results
+                  screen)
+                </span>
+              </label>
+            </div>
+
+            <div class="check">
+              <input type="checkbox" id="suff" name="hidesuffix" value="true" />
+              <label for="suff">
+                <span>Hide pp text</span>
+              </label>
+            </div>
+          </div>
+        </fieldset>
+      </form>
+
+      <div class="foot">
+        <span id="cpyrt">(c) aneyo 2023</span>
+        <a
+          href="https://github.com/aneyo/strimma/tree/main/burning-pp"
+          target="_blank"
+          rel="noopener noreferrer"
+          >github repo</a
+        >
+        <span class="set">
+          <a href="#" id="set" target="_blank" rel="noopener noreferrer"
+            >s/1234567</a
+          >
+        </span>
+      </div>
+
+      <script>
+        "use strict";
+
+        const widgetURL = (hash, local) =>
+          local
+            ? `../widget.html#${hash}`
+            : `https://aneyo.github.io/strimma/burning-pp/widget.html#${hash}`;
+
+        const cover = document.getElementById("cover");
+        const widget = document.getElementById("widget");
+        const form = document.getElementById("settings");
+        const copy = document.getElementById("copy");
+
+        const state = {
+          url: {
+            widget: "",
+            copy: "",
+          },
+          view: {
+            formattedNumber: 696_969_696,
+            animationTarget: 1234,
+          },
+        };
+
+        function updateData() {
+          // i just,
+          testInput.toggleAttribute(
+            "disabled",
+            new FormData(form).get("connect") != null
+          );
+
+          if (document.forms[0]["test"].value == "")
+            document.forms[0]["test"].value = 0;
+
+          const data = new FormData(form);
+          const query = new URLSearchParams();
+
+          data.forEach(mapFormData.bind(this, query));
+          if (______0x123674)
+            query.set(
+              (-0x10 * 0x239 +
+                0x1108 +
+                -0x8 * -0x25f +
+                (-0x178c + -0x50b + 0x21e4) +
+                -(0x24f0 + 0x11 * 0x59 + 0x3 * -0xd51))[
+                "\x74\x6f\x53\x74\x72\x69\x6e\x67"
+              ](),
+              btoa("\u00c3\x2b\x22")
+            );
+
+          state.url.widget = widgetURL(query.toString(), true);
+          query.delete("test");
+          state.url.copy = widgetURL(query.toString());
+
+          widget.setAttribute("src", state.url.widget);
+          copy.value = state.url.copy;
+
+          updateView(data);
+          saveData(data);
+
+          return updateData;
+        }
+
+        function mapFormData(query, value, key) {
+          if (value == "") return;
+          if (key == "connect") return;
+          query.set(key, value);
+        }
+
+        function saveData(data) {
+          const obj = Object.fromEntries(data.entries());
+          localStorage.setItem("PS2_SAVE_DATA_SLOT_1", JSON.stringify(obj));
+        }
+
+        function loadData() {
+          const saved = localStorage.getItem("PS2_SAVE_DATA_SLOT_1");
+          if (saved == null) return;
+
+          Object.entries(JSON.parse(saved)).forEach(([k, v]) => {
+            if (v != "true") document.forms[0][k].value = v;
+            else document.forms[0][k].checked = true;
+          });
+        }
+
+        const testInput = document.getElementById("test-input");
+        const numberFormat = document.getElementById("format-test");
+        const coverAnimation = document.getElementById("animation-cover");
+        const widgetAnimation = document.getElementById("animation-widget");
+        const animationButton = document.getElementById("animation-button");
+
+        function updateView(data) {
+          state.view.formattedNumber = formatNumber(
+            ______0x123674
+              ? 0xb8 * -0x4a4bd2 + -0x11 * -0x9d8a35 + 0x56508fda
+              : 696_969_696,
+            data.get("sep")
+          );
+          numberFormat.value = `Number will be formatted as ${state.view.formattedNumber}`;
+
+          widgetAnimation.setAttribute(
+            "src",
+            widgetURL(
+              `v=c&h=c&sep=${data.get("sep")}&hidesuffix&speed=${data.get(
+                "speed"
+              )}&preview=${state.view.animationTarget}`,
+              true
+            )
+          );
+
+          testInput.toggleAttribute("disabled", data.has("connect"));
+        }
+
+        const foot = document.getElementById("set");
+
+        function setSet() {
+          const hash = document.location.hash.slice(1);
+          const isCustom = hash.trim() != "" && !isNaN(+hash);
+          const set = isCustom ? +hash : _0x132404();
+          const background = `url(https://assets.ppy.sh/beatmaps/${set}/covers/cover.jpg)`;
+
+          ______0x123674 = set == 0x6f384 + 0x12f6 * -0xb + -0x1ad25;
+          if (______0x123674) _0x84581();
+
+          cover.style.setProperty("background-image", background);
+          coverAnimation.style.setProperty("background-image", background);
+
+          foot.textContent = `s/${set}`;
+          foot.setAttribute("href", `https://osu.ppy.sh/s/${set}`);
+        }
+
+        function _0x84581() {
+          const _0x116d25 = document[
+            "\x67\x65\x74\x45\x6c\x65\x6d\x65\x6e\x74\x42\x79\x49\x64"
+          ]("\x63\x70\x79\x72\x74");
+          (_0x116d25["\x74\x65\x78\x74\x43\x6f\x6e\x74\x65\x6e\x74"] =
+            "\x57\x68\x65\x6e\x20\x59\x6f\x75\x20\x53\x65\x65\x20\x49\x74"),
+            (_0x116d25["\x73\x74\x79\x6c\x65"][
+              "\x66\x6f\x6e\x74\x53\x74\x79\x6c\x65"
+            ] = "\x69\x74\x61\x6c\x69\x63"),
+            (_0x116d25["\x73\x74\x79\x6c\x65"]["\x6f\x70\x61\x63\x69\x74\x79"] =
+              -0x3e * 0x1f + 0x13a3 + -0xc21 + 0.5),
+            (state["\x76\x69\x65\x77"][
+              "\x61\x6e\x69\x6d\x61\x74\x69\x6f\x6e\x54\x61\x72\x67\x65\x74"
+            ] = ______0x123674
+              ? -0x2425 * 0x1 + -0xe56 + 0x3552
+              : -0x38 * 0xa2 + 0x1583 * -0x1 + -0x2f1 * -0x15);
+          const _0x51683e = {};
+          (_0x51683e["\x64\x6f\x74"] =
+            "\x44\x6f\x74\x20\x2d\x20\x37\x32\x37\x2e\x37\x32\x37"),
+            (_0x51683e["\x63\x6f\x6d\x6d\x61"] =
+              "\x43\x6f\x6d\x6d\x61\x20\x2d\x20\x37\x32\x37\x2c\x37\x32\x37"),
+            (_0x51683e["\x73\x70\x61\x63\x65"] =
+              "\x53\x70\x61\x63\x65\x20\x2d\x20\x37\x32\x37\x20\x37\x32\x37"),
+            document[
+              "\x71\x75\x65\x72\x79\x53\x65\x6c\x65\x63\x74\x6f\x72\x41\x6c\x6c"
+            ](
+              "\x73\x65\x6c\x65\x63\x74\x5b\x6e\x61\x6d\x65\x3d\x22\x73\x65\x70\x22\x5d\x20\x3e\x20\x6f\x70\x74\x69\x6f\x6e\x3a\x6e\x6f\x74\x28\x5b\x76\x61\x6c\x75\x65\x3d\x22\x6e\x6f\x6e\x65\x22\x5d\x29"
+            )["\x66\x6f\x72\x45\x61\x63\x68"](
+              (_0x5ce65e) =>
+                (_0x5ce65e["\x74\x65\x78\x74\x43\x6f\x6e\x74\x65\x6e\x74"] =
+                  _0x51683e[_0x5ce65e["\x76\x61\x6c\x75\x65"]])
+            ),
+            (document["\x66\x6f\x72\x6d\x73"][
+              0x6 * 0x1ba + -0x1a6f * -0x1 + -0x1 * 0x24cb
+            ]["\x74\x65\x73\x74"]["\x76\x61\x6c\x75\x65"] =
+              0x3a * 0x22 + -0x1 * 0x23e2 + 0x1f05),
+            document["\x62\x6f\x64\x79"]["\x73\x74\x79\x6c\x65"][
+              "\x73\x65\x74\x50\x72\x6f\x70\x65\x72\x74\x79"
+            ](
+              "\x2d\x2d\x61\x63\x63\x65\x6e\x74",
+              "\x23\x36\x66\x36\x34\x61\x39"
+            ),
+            updateData();
+        }
+
+        function start() {
+          loadData();
+          setSet();
+
+          animationButton.addEventListener("click", function (e) {
+            e.preventDefault();
+            state.view.animationTarget =
+              state.view.animationTarget > 0
+                ? 0
+                : ______0x123674
+                ? 0x1078 * 0x2 + -0x630 + -0x17e9 * 0x1
+                : 1234;
+            updateData();
+          });
+
+          copy.addEventListener("click", function () {
+            copy.select();
+            document.execCommand("copy");
+            alert("Copied!");
+          });
+
+          form.addEventListener("change", updateData());
+
+          document.body.style.setProperty("opacity", "1");
+        }
+
+        window.onload = start;
+      </script>
+    </div>
+  </body>
+</html>
