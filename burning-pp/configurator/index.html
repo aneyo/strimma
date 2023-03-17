@@ -241,6 +241,9 @@
             formattedNumber: 696_969_696,
             animationTarget: 1234,
           },
+          updates: {
+            addr: "",
+          },
         };
 
         function updateData() {
@@ -329,6 +332,10 @@
           );
 
           testInput.toggleAttribute("disabled", data.has("connect"));
+
+          if (data.get("addr") != state.updates.addr)
+            widget.contentWindow.location.reload();
+          state.updates.addr = data.get("addr");
         }
 
         const foot = document.getElementById("set");
