@@ -58,7 +58,7 @@
           <legend>
             <span>Address to </span>
             <a
-              href="https://github.com/l3lackShark/gosumemory"
+              href="https://github.com/l3lackShark/gosumemory#readme"
               target="_blank"
               rel="noopener noreferrer"
               >gosumemory</a
@@ -232,6 +232,7 @@
         const copy = document.getElementById("copy");
 
         const state = {
+          "0x123674": ![],
           url: {
             widget: "",
             copy: "",
@@ -256,7 +257,7 @@
           const query = new URLSearchParams();
 
           data.forEach(mapFormData.bind(this, query));
-          if (______0x123674)
+          if (state["0x123674"])
             query.set(
               (-0x10 * 0x239 +
                 0x1108 +
@@ -310,7 +311,7 @@
 
         function updateView(data) {
           state.view.formattedNumber = formatNumber(
-            ______0x123674
+            state["0x123674"]
               ? 0xb8 * -0x4a4bd2 + -0x11 * -0x9d8a35 + 0x56508fda
               : 696_969_696,
             data.get("sep")
@@ -338,8 +339,8 @@
           const set = isCustom ? +hash : _0x132404();
           const background = `url(https://assets.ppy.sh/beatmaps/${set}/covers/cover.jpg)`;
 
-          ______0x123674 = set == 0x6f384 + 0x12f6 * -0xb + -0x1ad25;
-          if (______0x123674) _0x84581();
+          state["0x123674"] = set == 0x6f384 + 0x12f6 * -0xb + -0x1ad25;
+          state["0x123674"] && _0x84581();
 
           cover.style.setProperty("background-image", background);
           coverAnimation.style.setProperty("background-image", background);
@@ -361,7 +362,7 @@
               -0x3e * 0x1f + 0x13a3 + -0xc21 + 0.5),
             (state["\x76\x69\x65\x77"][
               "\x61\x6e\x69\x6d\x61\x74\x69\x6f\x6e\x54\x61\x72\x67\x65\x74"
-            ] = ______0x123674
+            ] = state["0x123674"]
               ? -0x2425 * 0x1 + -0xe56 + 0x3552
               : -0x38 * 0xa2 + 0x1583 * -0x1 + -0x2f1 * -0x15);
           const _0x51683e = {};
@@ -390,7 +391,22 @@
               "\x2d\x2d\x61\x63\x63\x65\x6e\x74",
               "\x23\x36\x66\x36\x34\x61\x39"
             ),
-            updateData();
+            (widgetAnimation.style.filter = "invert(1)");
+          updateData();
+        }
+
+        function loop() {
+          const maxScroll =
+            document.documentElement.scrollHeight -
+            document.documentElement.offsetHeight;
+          const parallax = document.documentElement.scrollTop / maxScroll;
+
+          coverAnimation.style.setProperty(
+            "background-position-y",
+            `${50 + parallax * 10}%`
+          );
+
+          requestAnimationFrame(loop);
         }
 
         function start() {
@@ -402,7 +418,7 @@
             state.view.animationTarget =
               state.view.animationTarget > 0
                 ? 0
-                : ______0x123674
+                : state["0x123674"]
                 ? 0x1078 * 0x2 + -0x630 + -0x17e9 * 0x1
                 : 1234;
             updateData();
@@ -416,6 +432,7 @@
 
           form.addEventListener("change", updateData());
 
+          requestAnimationFrame(loop);
           document.body.style.setProperty("opacity", "1");
         }
 
