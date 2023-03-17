@@ -152,8 +152,6 @@
         settings.position.h = params.get("h") ?? params.get("x") ?? "left";
         settings.position.v = params.get("v") ?? params.get("y") ?? "top";
 
-        applyPosition();
-
         // number interpolation "speed"
         const speed = params.get("speed");
         settings.speed = speed != null && !isNaN(speed) ? speed : 5;
@@ -175,9 +173,11 @@
         const testingNumber = params.get("test");
         settings.test =
           testingNumber != null && !isNaN(testingNumber) ? testingNumber : null;
+
+        applyPositionSettings();
       }
 
-      function applyPosition() {
+      function applyPositionSettings() {
         document.body.setAttribute("v", settings.position.v);
         document.body.setAttribute("h", settings.position.h);
       }
@@ -191,52 +191,60 @@
     </script>
 
     <script>
-      const counter = {
-        show: false,
-        start: 0,
-        current: 0,
-        target: 0,
+      const state = {
+        connected: false,
+        counter: {
+          show: false,
+          start: 0,
+          current: 0,
+          target: 0,
+        },
+        animation: {
+          started: false,
+          last: 0,
+        },
       };
+    </script>
 
-      window.setNumber = function (num, quick = false) {
-        if (counter.target == num) return;
+    <script>
+      function setNumber(num, quick = false) {
+        if (state.counter.target == num) return;
 
         if (quick) {
-          counter.current = num;
-          counter.target = num;
+          state.counter.current = num;
+          state.counter.target = num;
           return;
         }
 
-        counter.target = num;
-      };
-
-      const timing = {
-        started: false,
-        lastFrame: 0,
-      };
+        state.counter.target = num;
+      }
 
       function loop(timestamp) {
-        timing.started = true;
+        state.animation.started = true;
 
         if (settings.test != null) {
-          counter.show = true;
+          state.counter.show = true;
           setNumber(settings.test);
         }
 
-        const frameTime = timestamp - timing.lastFrame;
-        timing.lastFrame = timestamp;
+        const frameTime = timestamp - state.animation.last;
+        state.animation.last = timestamp;
         const framePercentage = 1000 / frameTime / 10_000;
 
         if (settings.speed > 0)
-          counter.current = LERP(
-            counter.current,
-            counter.target,
+          state.counter.current = LERP(
+            state.counter.current,
+            state.counter.target,
             settings.speed * framePercentage
           );
-        else counter.current = counter.target;
+        else state.counter.current = state.counter.target;
 
-        document.body.toggleAttribute("show", counter.show);
-        draw(counter.current, settings.hideSuffix);
+        document.body.toggleAttribute(
+          "show",
+          state.connected && state.counter.show
+        );
+
+        draw(state.counter.current, settings.hideSuffix);
         requestAnimationFrame(loop);
       }
     </script>
@@ -247,15 +255,16 @@
 
         switch (data.menu.state) {
           case 2: // state 2 - game play
-            counter.show = true;
+            state.counter.show = true;
             break;
 
           case 7: // state 7 - result screen
-            counter.show = settings.showOnResultsScreen && counter.target > 0;
+            state.counter.show =
+              settings.showOnResultsScreen && state.counter.target > 0;
             break;
 
           default:
-            counter.show = false;
+            state.counter.show = false;
             if (!settings.savePPValue) setNumber(0, true);
             return;
         }
@@ -268,8 +277,9 @@
         const ws = new WebSocket(addr);
 
         ws.onopen = function () {
-          if (!timing.started) requestAnimationFrame(loop);
-          console.log("connected to gosumemory!");
+          state.connected = true;
+          if (!state.animation.started) requestAnimationFrame(loop);
+          console.log("connected to gosumemory");
         };
 
         ws.onmessage = function (event) {
@@ -278,6 +288,8 @@
         };
 
         ws.onclose = function (event) {
+          if (state.connected) console.log("disconnected from gosumemory");
+          state.connected = false;
           setTimeout(connectToWS.bind(), 5_000);
         };
       }
