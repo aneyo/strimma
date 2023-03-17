@@ -108,6 +108,7 @@
     <script>
       const settings = {
         test: null,
+        isPreview: false,
 
         address: "ws://localhost:24050/ws",
         position: {
@@ -170,9 +171,13 @@
         settings.showOnResultsScreen = params.has("stayonresults");
 
         // testing
-        const testingNumber = params.get("test");
+        const isPreview = params.has("preview");
+        const testingNumber = isPreview
+          ? params.get("preview")
+          : params.get("test");
         settings.test =
           testingNumber != null && !isNaN(testingNumber) ? testingNumber : null;
+        settings.isPreview = isPreview;
 
         applyPositionSettings();
       }
@@ -241,7 +246,7 @@
 
         document.body.toggleAttribute(
           "show",
-          state.connected && state.counter.show
+          (state.connected && state.counter.show) || settings.isPreview
         );
 
         draw(state.counter.current, settings.hideSuffix);
@@ -337,7 +342,8 @@
 
       document.addEventListener("DOMContentLoaded", function () {
         initSettings();
-        connectToWS();
+        if (!settings.isPreview) connectToWS();
+        else requestAnimationFrame(loop);
       });
     </script>
   </head>
