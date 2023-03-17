@@ -337,7 +337,10 @@
         for (let i = 0; i < pool.length - 1; i++)
           pool[i].setAttribute("sym", mapped[i - offset]);
 
-        document.body.lastElementChild.setAttribute("sym", "pp");
+        document.body.lastElementChild.setAttribute(
+          "sym",
+          hideSuffix ? "" : "pp"
+        );
       }
 
       document.addEventListener("DOMContentLoaded", function () {
