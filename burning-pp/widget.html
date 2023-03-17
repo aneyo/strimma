@@ -247,7 +247,9 @@
 
         document.body.toggleAttribute(
           "show",
-          (state.connected && state.counter.show) || settings.isPreview
+          (state.connected && state.counter.show) ||
+            settings.test ||
+            settings.isPreview
         );
 
         draw(state.counter.current, settings.hideSuffix);
@@ -284,7 +286,6 @@
 
         ws.onopen = function () {
           state.connected = true;
-          if (!state.animation.started) requestAnimationFrame(loop);
           console.log("connected to gosumemory");
         };
 
@@ -347,7 +348,7 @@
       document.addEventListener("DOMContentLoaded", function () {
         initSettings();
         if (!settings.isPreview) connectToWS();
-        else requestAnimationFrame(loop);
+        requestAnimationFrame(loop);
       });
     </script>
   </head>
