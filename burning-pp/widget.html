@@ -65,9 +65,7 @@
         justify-content: end;
       }
     </style>
-  </head>
 
-  <body>
     <script>
       function LERP(a, b, c) {
         return a + (b - a) * Math.min(1, Math.max(0, c));
@@ -125,13 +123,23 @@
         showOnResultsScreen: true,
       };
 
-      function parseSettings(isHashSettings) {
-        const params = new URLSearchParams(
-          (isHashSettings
-            ? document.location.hash
-            : document.location.search
-          ).slice(1)
-        );
+      function isUsingHashSettings() {
+        const hashLength = document.location.hash.length;
+        const searchLength = document.location.search.length;
+
+        return hashLength > 1 && searchLength <= hashLength;
+      }
+
+      function getSettingsString() {
+        const settingsString = isUsingHashSettings()
+          ? document.location.hash
+          : document.location.search;
+
+        return settingsString.slice(1);
+      }
+
+      function parseSettings() {
+        const params = new URLSearchParams(getSettingsString());
 
         // gosumemory websocket address
         settings.address =
@@ -173,51 +181,12 @@
         document.body.setAttribute("h", settings.position.h);
       }
 
-      (function () {
-        const hashLength = document.location.hash.length;
-        const searchLength = document.location.search.length;
+      function initSettings() {
+        if (isUsingHashSettings())
+          window.addEventListener("hashchange", parseSettings);
 
-        const settingsFromHash = hashLength > 1 && searchLength <= hashLength;
-
-        if (settingsFromHash)
-          window.addEventListener(
-            "hashchange",
-            parseSettings.bind(this, settingsFromHash)
-          );
-
-        parseSettings(settingsFromHash);
-      })();
-    </script>
-
-    <script>
-      (function () {
-        const pool = [];
-
-        function populate(num) {
-          for (let i = 0; i < num; i++) {
-            const element = document.createElement("div");
-            element.classList.add("burning");
-            document.body.insertBefore(element, document.body.lastChild);
-            pool.push(element);
-          }
-        }
-
-        window.draw = function (str, hideSuffix = false) {
-          const number = formatNumber(str, settings.separator);
-
-          const mapped = [...number];
-          const length = mapped.length + 1;
-          const populated = length - pool.length;
-
-          if (populated > 0) populate(populated);
-          const offset = pool.length - length;
-
-          for (let i = 0; i < pool.length - 1; i++)
-            pool[i].setAttribute("sym", mapped[i - offset]);
-
-          document.body.lastElementChild.setAttribute("sym", "pp");
-        };
-      })();
+        parseSettings();
+      }
     </script>
 
     <script>
@@ -241,10 +210,13 @@
       };
 
       const timing = {
+        started: false,
         lastFrame: 0,
       };
 
       function loop(timestamp) {
+        timing.started = true;
+
         if (settings.test != null) {
           counter.show = true;
           setNumber(settings.test);
@@ -266,8 +238,6 @@
         draw(counter.current, settings.hideSuffix);
         requestAnimationFrame(loop);
       }
-
-      requestAnimationFrame(loop);
     </script>
 
     <script>
@@ -296,6 +266,11 @@
         const addr = tryUsingURLAddress(settings.address);
         const ws = new WebSocket(addr);
 
+        ws.onopen = function () {
+          if (!timing.started) requestAnimationFrame(loop);
+          console.log("connected to gosumemory!");
+        };
+
         ws.onmessage = function (event) {
           const data = JSON.parse(event.data);
           if (data != null) dataMessage(data);
@@ -317,8 +292,40 @@
           return tryUsingURLAddress(addr, true);
         }
       }
-
-      connectToWS();
     </script>
-  </body>
+
+    <script>
+      const pool = [];
+
+      function populate(num) {
+        for (let i = 0; i < num; i++) {
+          const element = document.createElement("div");
+          element.classList.add("burning");
+          document.body.insertBefore(element, document.body.lastChild);
+          pool.push(element);
+        }
+      }
+
+      function draw(str, hideSuffix = false) {
+        const number = formatNumber(str, settings.separator);
+
+        const mapped = [...number];
+        const length = mapped.length + 1;
+        const populated = length - pool.length;
+
+        if (populated > 0) populate(populated);
+        const offset = pool.length - length;
+
+        for (let i = 0; i < pool.length - 1; i++)
+          pool[i].setAttribute("sym", mapped[i - offset]);
+
+        document.body.lastElementChild.setAttribute("sym", "pp");
+      }
+
+      document.addEventListener("DOMContentLoaded", function () {
+        initSettings();
+        connectToWS();
+      });
+    </script>
+  </head>
 </html>
