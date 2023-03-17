@@ -200,30 +200,12 @@
             document.body.insertBefore(element, document.body.lastChild);
             pool.push(element);
           }
-
-          pool[pool.length - 1].className = "burning pp";
         }
 
-        function map(str) {
-          return [...str]
-            .map(function (c) {
-              if (c == " ") return "space";
-              if (!isNaN(+c)) return `d${c}`;
-              switch (c) {
-                case ",":
-                  return "comma";
-                case ".":
-                  return "dot";
-              }
-              return null;
-            })
-            .filter((c) => c != null);
-        }
+        window.draw = function (str, hideSuffix = false) {
+          const number = formatNumber(str, settings.separator);
 
-        window.draw = function (num, hideSuffix = false) {
-          const number = formatNumber(num, settings.separator);
-
-          const mapped = map(number);
+          const mapped = [...number];
           const length = mapped.length + 1;
           const populated = length - pool.length;
 
@@ -231,12 +213,9 @@
           const offset = pool.length - length;
 
           for (let i = 0; i < pool.length - 1; i++)
-            pool[i].className =
-              i < offset ? "burning none" : `burning ${mapped[i - offset]}`;
+            pool[i].setAttribute("sym", mapped[i - offset]);
 
-          document.body.lastElementChild.className = hideSuffix
-            ? "burning"
-            : "burning pp";
+          document.body.lastElementChild.setAttribute("sym", "pp");
         };
       })();
     </script>
